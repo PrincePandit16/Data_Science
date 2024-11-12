@@ -1,0 +1,90 @@
+import random
+
+
+initial_state = {
+    "peg1": [3, 2, 1],  # Peg 1 has all disks, 3 is the largest, 1 is the smallest
+    "peg2": [],
+    "peg3": []
+}
+
+
+goal_state = {
+    "peg1": [],
+    "peg2": [],
+    "peg3": [3, 2, 1]
+}
+
+# Production rules define legal moves in the 3-puzzle problem
+def can_move(from_peg, to_peg, state):
+    """Check if it's legal to move the top disk from one peg to another."""
+    if not state[from_peg]:
+        return False  # No disk to move from this peg
+    if not state[to_peg]:
+        return True   # Can move to an empty peg
+    # Can move if the top disk on 'from_peg' is smaller than top disk on 'to_peg'
+    return state[from_peg][-1] < state[to_peg][-1]
+
+def move_disk(state, from_peg, to_peg):
+    """Move the top disk from one peg to another."""
+    if can_move(from_peg, to_peg, state):
+        disk = state[from_peg].pop()
+        state[to_peg].append(disk)
+        return True
+    return False
+
+# Quantum-inspired choices: randomly select a move to simulate superposition
+def quantum_choice(possible_moves):
+    """Simulate quantum superposition by choosing a random valid move."""
+    return random.choice(possible_moves)
+
+def is_goal_state(state):
+    """Check if the current state matches the goal state."""
+    return state == goal_state
+
+# Main Quantum Production System Solver
+def quantum_3_puzzle_solver(state):
+    steps = 0
+    max_steps = 50  # Set a limit to avoid infinite loops
+    
+    while not is_goal_state(state) and steps < max_steps:
+        # List all possible moves
+        possible_moves = []
+        for from_peg in ["peg1", "peg2", "peg3"]:
+            for to_peg in ["peg1", "peg2", "peg3"]:
+                if from_peg != to_peg and can_move(from_peg, to_peg, state):
+                    possible_moves.append((from_peg, to_peg))
+        
+        # If no moves are possible, break (though this shouldn't happen in this puzzle)
+        if not possible_moves:
+            print("No more moves possible.")
+            break
+        
+        # Select a quantum-inspired random move
+        from_peg, to_peg = quantum_choice(possible_moves)
+        
+        # Apply the chosen move
+        move_disk(state, from_peg, to_peg)
+        
+        # Print the current state
+        print(f"Step {steps + 1}: Move disk from {from_peg} to {to_peg}")
+        print_state(state)
+        
+        # Increment step counter
+        steps += 1
+
+    # Check if goal state is achieved
+    if is_goal_state(state):
+        print("Goal state reached!")
+    else:
+        print("Failed to reach the goal state within the step limit.")
+
+def print_state(state):
+    """Display the current state of the puzzle."""
+    for peg in ["peg1", "peg2", "peg3"]:
+        print(f"{peg}: {state[peg]}")
+    print("\n")
+
+# Run the quantum-inspired 3-puzzle solver
+print("Starting 3-Puzzle Solver with Quantum-Inspired Production System...\n")
+quantum_3_puzzle_solver(initial_state)
+

@@ -1,0 +1,53 @@
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import Aer
+import matplotlib.pyplot as plt
+
+def generate_random_number():
+   
+    circuit = QuantumCircuit(16, 16)
+   
+    circuit.h(range(16))
+   
+    circuit.measure(range(16), range(16))
+   
+    simulator = Aer.get_backend('qasm_simulator')
+    compiled_circuit = transpile(circuit, simulator)
+    job = simulator.run(compiled_circuit, shots=1)
+    result = job.result()
+    counts = result.get_counts(circuit)
+    
+    bitstring = list(counts.keys())[0]
+    random_number = int(bitstring, 2)
+    return random_number, bitstring
+
+random_numbers = [generate_random_number()[0] for _ in range(1000)]
+
+
+plt.figure(figsize=(12, 6))
+plt.hist(random_numbers, bins=50, edgecolor='black')
+plt.title('Distribution of 16-Qubit QRNG Output')
+plt.xlabel('Generated Number')
+plt.ylabel('Frequency')
+plt.show()
+
+
+circuit = QuantumCircuit(16, 16)
+circuit.h(range(16))
+circuit.measure(range(16), range(16))
+print("\nQuantum Circuit:")
+print(circuit)
+
+
+
+single_random_number, binary_representation = generate_random_number()
+print(f"\nSingle Random Number Generation:")
+print(f"Random number (decimal): {single_random_number}")
+print(f"Random number (binary): {binary_representation}\n")
+
+
+print(f"\nStatistics")
+print(f"Min: {min(random_numbers)}")
+print(f"Max: {max(random_numbers)}")
+print(f"Mean: {sum(random_numbers) / len(random_numbers)}")
+
+circuit.draw(output='mpl')
